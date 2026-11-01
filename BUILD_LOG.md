@@ -124,3 +124,25 @@ Calls without an admin user (scripts, imports) are not restricted.
 - `tsc` clean; `npm run verify:rules` 11/11.
 
 **Not imported on purpose:** the 6 deleted quizzes, and student data (users, submissions, answers, progress, Q&A).
+
+## 10. Local end-to-end test (before deploying)
+
+**What was tested**
+1. **Approval workflow in the real admin panel**, with two local test accounts (`test-author@local.test` = Author, `test-editor@local.test` = Editor; passwords in the gitignored `.test-accounts.env`):
+   - Author creates and saves a draft lesson: OK (200).
+   - Author's **Publish** button is disabled (Strapi's default Author role has no publish permission; the server-side rule is a second layer for direct API calls).
+   - Author sets Review status `approved`: **refused** (was 403).
+   - Author sets `in_review`: OK (200).
+   - Editor publishes while `in_review`: **refused** (400) with the message "Set Review status to 'approved' (and save) before publishing."
+   - Editor sets `approved` (200) and publishes: OK (200, "Published document").
+2. **REST API** with a temporary read-only API token: no token -> 403; read-only token cannot write -> 403; published totals: 63 lessons (62 + the test lesson), 15 subjects, 30 units, 6 quizzes, 56 past papers, 42 revision modules; a lesson returns its notes, resources, unit and subject; quiz #11 returns 50 questions / 250 options / 50 correct.
+3. **Production Docker image** run locally (`NODE_ENV=production`, port 1338).
+
+**Bugs found and fixed**
+- **Container crashed on start**: "The upload folder (/opt/app/public/uploads) doesn't exist". `.dockerignore` excludes `public/uploads`, and the local upload provider refuses to start without it. Every deployment would have failed. Fix: `RUN mkdir -p public/uploads` in the Dockerfile.
+- **Slow, oversized image**: `RUN chown -R node:node /opt/app` took ~7 minutes and duplicated `node_modules` in a new layer (image 2.48 GB). Fix: `COPY --from=build --chown=node:node`. Image now **1.52 GB**; that step takes 4 s.
+- **Unclear error for Authors**: the panel showed only "Forbidden" for the 403 role errors. Switched those two errors to `ValidationError` (400), which the panel displays with the full message.
+
+**After the fixes:** production container healthy in ~20 s, 0 errors in its log, admin panel 200, API totals as above, `public/uploads` present, runs as the `node` user. `tsc` clean, `npm run verify:rules` 11/11.
+
+**Cleanup:** test lesson deleted (back to 62 published lessons), API token revoked, test container removed. The two test accounts were **kept** for further role testing; delete them before this database is used in production.

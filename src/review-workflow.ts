@@ -47,8 +47,10 @@ export function registerReviewWorkflow(strapi: Core.Strapi) {
 
     if (context.action === 'create' || context.action === 'update') {
       const status = params.data?.reviewStatus;
+      // ValidationError (400) rather than ForbiddenError (403): the admin panel
+      // only shows "Forbidden" for a 403, but shows this message for a 400.
       if (status && REVIEWER_ONLY_STATUSES.has(status) && !reviewer) {
-        throw new errors.ForbiddenError(
+        throw new errors.ValidationError(
           'Only an Editor (Content Approver) can approve a lesson or request changes.'
         );
       }
@@ -56,7 +58,7 @@ export function registerReviewWorkflow(strapi: Core.Strapi) {
 
     if (context.action === 'publish') {
       if (!reviewer) {
-        throw new errors.ForbiddenError(
+        throw new errors.ValidationError(
           'Only an Editor (Content Approver) can publish lessons. Set Review status to "in_review" to submit it.'
         );
       }

@@ -17,8 +17,11 @@ FROM node:22-alpine
 RUN apk add --no-cache vips-dev
 WORKDIR /opt/app
 ENV NODE_ENV=production
-COPY --from=build /opt/app ./
-RUN chown -R node:node /opt/app
+# --chown on the copy avoids a separate `chown -R` layer (which duplicated
+# node_modules and took ~7 minutes). public/uploads is excluded by
+# .dockerignore, but the local upload provider refuses to start without it.
+COPY --from=build --chown=node:node /opt/app ./
+RUN mkdir -p public/uploads && chown node:node public/uploads
 USER node
 EXPOSE 1337
 CMD ["npm", "run", "start"]
