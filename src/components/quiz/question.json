@@ -1,0 +1,46 @@
+{
+  "collectionName": "components_quiz_questions",
+  "info": {
+    "displayName": "Question",
+    "icon": "question",
+    "description": "A quiz question with its answer options."
+  },
+  "options": {},
+  "attributes": {
+    "type": {
+      "type": "enumeration",
+      "enum": ["mcq", "essay", "short_answer"],
+      "default": "mcq"
+    },
+    "text": {
+      "type": "richtext",
+      "required": true
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "explanation": {
+      "type": "richtext"
+    },
+    "unitName": {
+      "type": "string",
+      "maxLength": 150
+    },
+    "points": {
+      "type": "integer",
+      "default": 1,
+      "min": 0
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    },
+    "options": {
+      "type": "component",
+      "repeatable": true,
+      "component": "quiz.option"
+    }
+  }
+}

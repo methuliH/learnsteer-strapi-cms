@@ -1,0 +1,61 @@
+{
+  "kind": "collectionType",
+  "collectionName": "ls_past_papers",
+  "info": {
+    "singularName": "past-paper",
+    "pluralName": "past-papers",
+    "displayName": "Past Paper",
+    "description": "An A/L past or model paper with its marking scheme (PDFs)."
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "subject": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::subject.subject",
+      "inversedBy": "pastPapers"
+    },
+    "year": {
+      "type": "integer",
+      "required": true,
+      "min": 1950
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 255
+    },
+    "badge": {
+      "type": "string",
+      "default": "A/L PAST PAPER",
+      "maxLength": 100
+    },
+    "isModel": {
+      "type": "boolean",
+      "default": false
+    },
+    "durationMin": {
+      "type": "integer",
+      "default": 180,
+      "min": 0
+    },
+    "structure": {
+      "type": "string",
+      "default": "MCQ & Essay",
+      "maxLength": 100
+    },
+    "paper": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["files"]
+    },
+    "markingScheme": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["files"]
+    }
+  }
+}

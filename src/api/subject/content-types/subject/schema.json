@@ -1,0 +1,68 @@
+{
+  "kind": "collectionType",
+  "collectionName": "ls_subjects",
+  "info": {
+    "singularName": "subject",
+    "pluralName": "subjects",
+    "displayName": "Subject",
+    "description": "An A/L subject within a stream, e.g. Chemistry (Physical Science)."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "maxLength": 150
+    },
+    "code": {
+      "type": "string",
+      "required": true,
+      "unique": true,
+      "maxLength": 50
+    },
+    "stream": {
+      "type": "string",
+      "required": true,
+      "maxLength": 100
+    },
+    "medium": {
+      "type": "enumeration",
+      "enum": ["Sinhala", "English", "Tamil"],
+      "default": "Sinhala",
+      "required": true
+    },
+    "icon": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "color": {
+      "type": "string",
+      "maxLength": 50
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    },
+    "units": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::unit.unit",
+      "mappedBy": "subject"
+    },
+    "pastPapers": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::past-paper.past-paper",
+      "mappedBy": "subject"
+    },
+    "revisionModules": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::revision-module.revision-module",
+      "mappedBy": "subject"
+    }
+  }
+}

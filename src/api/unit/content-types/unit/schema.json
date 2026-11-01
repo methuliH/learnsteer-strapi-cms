@@ -1,0 +1,50 @@
+{
+  "kind": "collectionType",
+  "collectionName": "ls_units",
+  "info": {
+    "singularName": "unit",
+    "pluralName": "units",
+    "displayName": "Unit",
+    "description": "A syllabus unit inside a subject."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "subject": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::subject.subject",
+      "inversedBy": "units"
+    },
+    "unitNumber": {
+      "type": "integer",
+      "required": true,
+      "min": 0
+    },
+    "name": {
+      "type": "string",
+      "required": true,
+      "maxLength": 255
+    },
+    "description": {
+      "type": "text"
+    },
+    "color": {
+      "type": "string",
+      "default": "#059669",
+      "maxLength": 50
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    },
+    "lessons": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::lesson.lesson",
+      "mappedBy": "unit"
+    }
+  }
+}

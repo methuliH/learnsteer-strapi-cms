@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_lesson_resources",
+  "info": {
+    "displayName": "Resource (PDF)",
+    "icon": "attachment",
+    "description": "A downloadable PDF attached to a lesson. PDF-only is enforced in src/pdf-only.ts."
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 255
+    },
+    "file": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": ["files"]
+    },
+    "color": {
+      "type": "string",
+      "maxLength": 100
+    }
+  }
+}

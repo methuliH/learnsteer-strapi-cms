@@ -1,0 +1,33 @@
+{
+  "collectionName": "components_lesson_note_sections",
+  "info": {
+    "displayName": "Note section",
+    "icon": "file",
+    "description": "One section of a lesson's notes."
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "sectionType": {
+      "type": "enumeration",
+      "enum": ["text", "html", "image"],
+      "default": "text"
+    },
+    "content": {
+      "type": "richtext",
+      "required": true
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    }
+  }
+}

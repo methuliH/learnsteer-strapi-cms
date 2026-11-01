@@ -1,0 +1,91 @@
+{
+  "kind": "collectionType",
+  "collectionName": "ls_lessons",
+  "info": {
+    "singularName": "lesson",
+    "pluralName": "lessons",
+    "displayName": "Lesson",
+    "description": "A lesson inside a unit. Draft & Publish replaces the old is_visible flag; reviewStatus drives the creator -> approver workflow."
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "unit": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::unit.unit",
+      "inversedBy": "lessons"
+    },
+    "lessonNumber": {
+      "type": "integer",
+      "required": true,
+      "min": 0
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 255
+    },
+    "instructor": {
+      "type": "string",
+      "maxLength": 150
+    },
+    "videoUrl": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "durationMin": {
+      "type": "integer",
+      "default": 0,
+      "min": 0
+    },
+    "lessonType": {
+      "type": "enumeration",
+      "enum": ["Video", "Reading", "Live", "Practical"],
+      "default": "Video"
+    },
+    "isLocked": {
+      "type": "boolean",
+      "default": false
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    },
+    "summary": {
+      "type": "text"
+    },
+    "body": {
+      "type": "blocks"
+    },
+    "targetDifficulty": {
+      "type": "enumeration",
+      "enum": ["Beginner", "Intermediate", "Advanced"],
+      "default": "Intermediate"
+    },
+    "tags": {
+      "type": "json"
+    },
+    "reviewStatus": {
+      "type": "enumeration",
+      "enum": ["draft", "in_review", "changes_requested", "approved"],
+      "default": "draft",
+      "required": true
+    },
+    "reviewNotes": {
+      "type": "text"
+    },
+    "notes": {
+      "type": "component",
+      "repeatable": true,
+      "component": "lesson.note-section"
+    },
+    "resources": {
+      "type": "component",
+      "repeatable": true,
+      "component": "lesson.resource"
+    }
+  }
+}

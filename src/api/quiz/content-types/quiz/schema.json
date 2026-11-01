@@ -1,0 +1,72 @@
+{
+  "kind": "collectionType",
+  "collectionName": "ls_quizzes",
+  "info": {
+    "singularName": "quiz",
+    "pluralName": "quizzes",
+    "displayName": "Quiz",
+    "description": "A quiz or mock exam with its questions."
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 255
+    },
+    "description": {
+      "type": "text"
+    },
+    "medium": {
+      "type": "enumeration",
+      "enum": ["Sinhala", "English", "Tamil"],
+      "default": "Sinhala",
+      "required": true
+    },
+    "streams": {
+      "type": "json"
+    },
+    "subject": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::subject.subject"
+    },
+    "unit": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::unit.unit"
+    },
+    "isMock": {
+      "type": "boolean",
+      "default": false
+    },
+    "sessionNumber": {
+      "type": "integer",
+      "default": 1
+    },
+    "durationMin": {
+      "type": "integer",
+      "default": 0,
+      "min": 0
+    },
+    "releaseDate": {
+      "type": "datetime"
+    },
+    "endDate": {
+      "type": "datetime"
+    },
+    "markingScheme": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["files"]
+    },
+    "questions": {
+      "type": "component",
+      "repeatable": true,
+      "component": "quiz.question"
+    }
+  }
+}

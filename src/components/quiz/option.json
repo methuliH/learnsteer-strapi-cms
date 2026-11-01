@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_quiz_options",
+  "info": {
+    "displayName": "Option",
+    "icon": "bulletList",
+    "description": "One answer option for a question."
+  },
+  "options": {},
+  "attributes": {
+    "text": {
+      "type": "text",
+      "required": true
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "isCorrect": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    }
+  }
+}

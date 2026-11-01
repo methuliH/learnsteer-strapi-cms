@@ -1,0 +1,51 @@
+{
+  "kind": "collectionType",
+  "collectionName": "ls_revision_modules",
+  "info": {
+    "singularName": "revision-module",
+    "pluralName": "revision-modules",
+    "displayName": "Revision Module",
+    "description": "Revision material for a subject/unit: short notes and essay guide PDFs."
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "subject": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::subject.subject",
+      "inversedBy": "revisionModules"
+    },
+    "unit": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::unit.unit"
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "maxLength": 255
+    },
+    "topicsCount": {
+      "type": "integer",
+      "default": 0,
+      "min": 0
+    },
+    "shortNotes": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["files"]
+    },
+    "essayGuide": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["files"]
+    },
+    "isPopular": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}
