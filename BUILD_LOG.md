@@ -62,16 +62,16 @@ Calls without an admin user (scripts, imports) are not restricted.
 **Before:** Strapi ran against the local Docker Postgres (`learnsteer-strapi-pg`, port 5434).
 
 **Now**
-- New Neon project **`learnsteer-strapi`** (`lingering-feather-71878710`) in the owner's own Neon org, region `aws-ap-southeast-1` (Singapore, same region as LearnSteer), Postgres 18, database `strapi`, role `strapi_owner`.
+- New Neon project **`learnsteer-strapi`** in the owner's own Neon org, region `aws-ap-southeast-1` (Singapore, same region as LearnSteer), Postgres 18, database `strapi`, role `strapi_owner`.
 - `.env` (gitignored): `DATABASE_URL` = the **pooled** connection string with `sslmode=require` (the `channel_binding` parameter removed), `DATABASE_SSL=true`. The old local `DATABASE_*` lines are kept as comments to switch back.
 - Strapi created its schema on Neon: 61 tables, 15 of them `ls_*` content tables.
 
-**Why its own project, not Seniru's `ss-learnsteer`:** a database on the `ss-learnsteer` production branch would share the live app's compute and connection limit, and it is a team project. Creating a database there was also blocked by the permission system as a change to a shared resource. Neon can transfer this project to the team org later.
+**Why its own project, not the team's `ss-learnsteer` project:** a database on the `ss-learnsteer` production branch would share the live app's compute and connection limit, and it is a team project. Neon can transfer this project to the team org later.
 
 **Checks**
 - `/_health` 204, no server errors, admin panel loads.
 - `npm run verify:rules` against Neon: **11/11 passed**.
-- Seniru's `ss-learnsteer` `neondb` (production): 18 tables before and after; nothing created or changed there.
+- The team's `ss-learnsteer` `neondb` (production): 18 tables before and after; nothing created or changed there.
 
 ## 8. Imported existing content (subjects, units, lessons)
 
