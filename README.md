@@ -75,6 +75,9 @@ Secrets are runtime env vars only; `.env*` files are excluded from the image.
 
 ### Neon
 
+Development currently uses the Neon project `learnsteer-strapi` (`lingering-feather-71878710`, Singapore) in the owner's Neon org; the connection string lives only in `.env`.
+
+
 Use the **pooled** connection string with SSL, on a database/branch dedicated to Strapi:
 
 ```
