@@ -8,18 +8,27 @@
   "options": {},
   "attributes": {
     "text": {
-      "type": "text",
-      "required": true
+      "type": "text"
     },
     "image": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "isCorrect": {
       "type": "boolean",
       "default": false,
       "required": true
+    },
+    "label": {
+      "type": "string",
+      "maxLength": 5
+    },
+    "imageUrl": {
+      "type": "string",
+      "maxLength": 500
     }
   }
 }

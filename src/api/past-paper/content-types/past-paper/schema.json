@@ -50,12 +50,28 @@
     "paper": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["files"]
+      "allowedTypes": [
+        "files"
+      ]
     },
     "markingScheme": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["files"]
+      "allowedTypes": [
+        "files"
+      ]
+    },
+    "legacyId": {
+      "type": "integer",
+      "min": 1
+    },
+    "paperUrl": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "markingSchemeUrl": {
+      "type": "string",
+      "maxLength": 500
     }
   }
 }

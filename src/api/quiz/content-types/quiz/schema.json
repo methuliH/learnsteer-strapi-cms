@@ -22,7 +22,11 @@
     },
     "medium": {
       "type": "enumeration",
-      "enum": ["Sinhala", "English", "Tamil"],
+      "enum": [
+        "Sinhala",
+        "English",
+        "Tamil"
+      ],
       "default": "Sinhala",
       "required": true
     },
@@ -61,12 +65,22 @@
     "markingScheme": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["files"]
+      "allowedTypes": [
+        "files"
+      ]
     },
     "questions": {
       "type": "component",
       "repeatable": true,
       "component": "quiz.question"
+    },
+    "legacyId": {
+      "type": "integer",
+      "min": 1
+    },
+    "markingSchemeUrl": {
+      "type": "string",
+      "maxLength": 500
     }
   }
 }

@@ -9,7 +9,11 @@
   "attributes": {
     "type": {
       "type": "enumeration",
-      "enum": ["mcq", "essay", "short_answer"],
+      "enum": [
+        "mcq",
+        "essay",
+        "short_answer"
+      ],
       "default": "mcq"
     },
     "text": {
@@ -19,7 +23,9 @@
     "image": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "explanation": {
       "type": "richtext"
@@ -41,6 +47,10 @@
       "type": "component",
       "repeatable": true,
       "component": "quiz.option"
+    },
+    "imageUrl": {
+      "type": "string",
+      "maxLength": 500
     }
   }
 }

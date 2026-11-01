@@ -97,3 +97,30 @@ Calls without an admin user (scripts, imports) are not restricted.
 - `tsc` clean; `npm run verify:rules` still **11/11** after the schema changes.
 
 **Not imported yet:** quizzes (12, with 459 questions and 1,800 options), past papers (56), revision modules (42). Note images and resource files are still links to `cdn.learnsteer.lk`, not files in Strapi's media library.
+
+## 9. Imported quizzes, past papers and revision modules
+
+**Before:** Strapi had subjects, units and lessons only (step 8).
+
+**What profiling the source showed**
+- Quizzes: 12 in the old database, but **6 are deleted** there (`is_deleted`; several are tests like "[TEST]"). Only the 6 live ones were imported.
+- Questions keep their answer options in two places: the `options` table (with `is_correct`) and an older JSON `questions.options` column (ids a-e) with `correct_answer`. 99 questions only have the JSON form and **no correct answer recorded**; all 99 belong to the deleted quizzes.
+- Most question/option image fields are empty strings (89 of 459 questions and 125 of 1,800 options have a real image).
+- No quiz has a subject or unit, quiz marking schemes are empty, and no revision module has a unit. Past papers and revision modules have PDF links on `cdn.learnsteer.lk`.
+
+**Schema changes**
+- `legacyId` on Quiz, Past Paper, Revision Module.
+- URL fields for CDN-hosted files: Quiz `markingSchemeUrl`; Past Paper `paperUrl`, `markingSchemeUrl`; Revision Module `shortNotesUrl`, `essayGuideUrl`; question and option `imageUrl`.
+- `quiz.option`: new `label` (keeps the a-e id from the JSON form); `text` no longer required (allows image-only options).
+
+**Import script** (`scripts/import-legacy.js`): now also imports quizzes (questions and options as components: options from the `options` table when present, otherwise from the JSON column), past papers and revision modules. Empty strings become empty values. It reports questions that came from JSON options or have no correct answer.
+
+**Result:** created 6 quizzes (published), 56 past papers, 42 revision modules (published). Second run: created 0, skipped everything. Question warnings: 0 (every imported question has exactly one correct answer).
+
+**Checks against the source (read-only)**
+- Each of the 6 quizzes matches on question / option / correct-answer counts (299 questions, 1,495 options, 299 correct).
+- Past papers 56/56 match on id, title, year, paper URL, marking scheme URL, model flag; all 56 linked to their subject.
+- Revision modules 42/42 match on id, title, both PDF URLs, topic count; all 42 linked to their subject.
+- `tsc` clean; `npm run verify:rules` 11/11.
+
+**Not imported on purpose:** the 6 deleted quizzes, and student data (users, submissions, answers, progress, Q&A).

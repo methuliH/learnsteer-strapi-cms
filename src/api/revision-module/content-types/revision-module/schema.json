@@ -36,16 +36,32 @@
     "shortNotes": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["files"]
+      "allowedTypes": [
+        "files"
+      ]
     },
     "essayGuide": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["files"]
+      "allowedTypes": [
+        "files"
+      ]
     },
     "isPopular": {
       "type": "boolean",
       "default": false
+    },
+    "legacyId": {
+      "type": "integer",
+      "min": 1
+    },
+    "shortNotesUrl": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "essayGuideUrl": {
+      "type": "string",
+      "maxLength": 500
     }
   }
 }

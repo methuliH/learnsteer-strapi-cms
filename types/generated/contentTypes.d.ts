@@ -559,6 +559,13 @@ export interface ApiPastPaperPastPaper extends Struct.CollectionTypeSchema {
       > &
       Schema.Attribute.DefaultTo<180>;
     isModel: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    legacyId: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -566,7 +573,15 @@ export interface ApiPastPaperPastPaper extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     markingScheme: Schema.Attribute.Media<'files'>;
+    markingSchemeUrl: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 500;
+      }>;
     paper: Schema.Attribute.Media<'files'>;
+    paperUrl: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 500;
+      }>;
     publishedAt: Schema.Attribute.DateTime;
     structure: Schema.Attribute.String &
       Schema.Attribute.SetMinMaxLength<{
@@ -619,10 +634,21 @@ export interface ApiQuizQuiz extends Struct.CollectionTypeSchema {
       Schema.Attribute.DefaultTo<0>;
     endDate: Schema.Attribute.DateTime;
     isMock: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    legacyId: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::quiz.quiz'> &
       Schema.Attribute.Private;
     markingScheme: Schema.Attribute.Media<'files'>;
+    markingSchemeUrl: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 500;
+      }>;
     medium: Schema.Attribute.Enumeration<['Sinhala', 'English', 'Tamil']> &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'Sinhala'>;
@@ -661,7 +687,18 @@ export interface ApiRevisionModuleRevisionModule
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     essayGuide: Schema.Attribute.Media<'files'>;
+    essayGuideUrl: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 500;
+      }>;
     isPopular: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    legacyId: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -670,6 +707,10 @@ export interface ApiRevisionModuleRevisionModule
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
     shortNotes: Schema.Attribute.Media<'files'>;
+    shortNotesUrl: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 500;
+      }>;
     subject: Schema.Attribute.Relation<'manyToOne', 'api::subject.subject'>;
     title: Schema.Attribute.String &
       Schema.Attribute.Required &

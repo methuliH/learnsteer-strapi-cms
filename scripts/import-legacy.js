@@ -1,5 +1,6 @@
-// Imports subjects, units and lessons (with note sections and resources) from
-// the old LearnSteer database into Strapi.
+// Imports subjects, units, lessons (with note sections and resources), quizzes
+// (with questions and options), past papers and revision modules from the old
+// LearnSteer database into Strapi.
 //
 //   SOURCE_DATABASE_URL=postgresql://...  node scripts/import-legacy.js [--dry-run]
 //
@@ -8,8 +9,9 @@
 //   anything already imported is skipped.
 // - Visible lessons are imported as published with reviewStatus "approved";
 //   hidden ones as drafts.
-// - Note images and resource files stay as external URLs (imageUrl /
-//   externalUrl) until upload storage (S3) is decided.
+// - Note images, resource files and PDF links stay as external URLs
+//   (imageUrl / externalUrl / *Url fields) until upload storage (S3) is decided.
+// - Quizzes deleted in the old CMS are skipped.
 const path = require('path');
 const { createRequire } = require('module');
 
@@ -37,6 +39,14 @@ async function readSource() {
       lessons: await q('select * from lessons order by unit_id, order_index, lesson_number, id'),
       notes: await q('select * from lesson_notes order by lesson_id, order_index, id'),
       resources: await q('select * from lesson_resources order by lesson_id, id'),
+      // Quizzes deleted in the old CMS (is_deleted / deleted_at) are not imported.
+      quizzes: await q(
+        'select * from quizzes where not coalesce(is_deleted, false) and deleted_at is null order by id'
+      ),
+      questions: await q('select * from questions order by quiz_id, order_index, id'),
+      options: await q('select * from options order by question_id, id'),
+      pastPapers: await q('select * from past_papers order by subject_id, year, id'),
+      revisionModules: await q('select * from revision_modules order by subject_id, id'),
     };
     await client.query('COMMIT');
     return data;
@@ -48,18 +58,31 @@ async function readSource() {
 const groupBy = (rows, key) =>
   rows.reduce((m, r) => (m.get(r[key]) ? m.get(r[key]).push(r) : m.set(r[key], [r]), m), new Map());
 
+// The old data stores many "no value" fields as empty strings.
+const blank = (v) => (v === '' || v === undefined ? null : v);
+
 (async () => {
   const src = await readSource();
   console.log(
     `source: ${src.subjects.length} subjects, ${src.units.length} units, ${src.lessons.length} lessons, ` +
-      `${src.notes.length} note sections, ${src.resources.length} resources`
+      `${src.notes.length} note sections, ${src.resources.length} resources, ` +
+      `${src.quizzes.length} live quizzes, ${src.pastPapers.length} past papers, ` +
+      `${src.revisionModules.length} revision modules`
   );
 
   const strapi = await createStrapi(await compileStrapi()).load();
   const S = strapi.documents('api::subject.subject');
   const U = strapi.documents('api::unit.unit');
   const L = strapi.documents('api::lesson.lesson');
-  const stats = { created: { subjects: 0, units: 0, lessons: 0 }, skipped: { subjects: 0, units: 0, lessons: 0 } };
+  const Q = strapi.documents('api::quiz.quiz');
+  const P = strapi.documents('api::past-paper.past-paper');
+  const R = strapi.documents('api::revision-module.revision-module');
+  const kinds = ['subjects', 'units', 'lessons', 'quizzes', 'pastPapers', 'revisionModules'];
+  const stats = {
+    created: Object.fromEntries(kinds.map((k) => [k, 0])),
+    skipped: Object.fromEntries(kinds.map((k) => [k, 0])),
+  };
+  const warnings = { questionsWithoutCorrectAnswer: 0, questionsFromJsonOptions: 0 };
 
   try {
     const existing = async (docs, legacyId) =>
@@ -156,8 +179,105 @@ const groupBy = (rows, key) =>
       });
     }
 
+    // Quizzes (+ questions and options as components). Options come from the
+    // `options` table when it has rows for the question; otherwise from the
+    // older JSON `questions.options` column, which has no correct-answer flag.
+    const optsBy = groupBy(src.options, 'question_id');
+    const questionsBy = groupBy(src.questions, 'quiz_id');
+    for (const z of src.quizzes) {
+      if (await existing(Q, z.id)) {
+        stats.skipped.quizzes++;
+        continue;
+      }
+      stats.created.quizzes++;
+      const questions = (questionsBy.get(z.id) || []).map((qn) => {
+        const tableOpts = optsBy.get(qn.id) || [];
+        let options;
+        if (tableOpts.length) {
+          options = tableOpts.map((o) => ({
+            text: o.text, imageUrl: blank(o.image_url), isCorrect: o.is_correct === true,
+          }));
+        } else {
+          warnings.questionsFromJsonOptions++;
+          const json = Array.isArray(qn.options) ? qn.options : [];
+          options = json.map((o) => ({
+            label: o.id, text: o.text_markdown ?? o.text ?? '', imageUrl: blank(o.image_url),
+            isCorrect: blank(qn.correct_answer) !== null && o.id === qn.correct_answer,
+          }));
+        }
+        if (!options.some((o) => o.isCorrect)) warnings.questionsWithoutCorrectAnswer++;
+        return {
+          type: ['mcq', 'essay', 'short_answer'].includes(qn.type) ? qn.type : 'mcq',
+          text: qn.text_markdown,
+          imageUrl: blank(qn.image_url),
+          explanation: blank(qn.explanation),
+          unitName: blank(qn.unit_name),
+          points: Number(qn.points ?? 1),
+          order: Number(qn.order_index ?? 0),
+          options,
+        };
+      });
+      if (DRY_RUN) continue;
+      await Q.create({
+        status: z.is_visible ? 'published' : 'draft',
+        data: {
+          legacyId: Number(z.id),
+          title: z.title,
+          description: blank(z.description),
+          medium: ['Sinhala', 'English', 'Tamil'].includes(z.medium) ? z.medium : 'Sinhala',
+          streams: z.stream,
+          isMock: z.is_mock === true,
+          sessionNumber: Number(z.session_number ?? 1),
+          durationMin: Number(z.duration_min ?? 0),
+          releaseDate: z.release_date,
+          endDate: z.end_date,
+          markingSchemeUrl: blank(z.marking_scheme_url),
+          questions,
+        },
+      });
+    }
+
+    // Past papers
+    for (const p of src.pastPapers) {
+      if (await existing(P, p.id)) {
+        stats.skipped.pastPapers++;
+        continue;
+      }
+      stats.created.pastPapers++;
+      if (DRY_RUN) continue;
+      await P.create({
+        status: 'published',
+        data: {
+          legacyId: Number(p.id), subject: subjectDoc.get(p.subject_id), year: Number(p.year),
+          title: p.title, badge: blank(p.badge) ?? 'A/L PAST PAPER', isModel: p.is_model === true,
+          durationMin: Number(p.duration_min ?? 180), structure: blank(p.structure) ?? 'MCQ & Essay',
+          paperUrl: blank(p.paper_pdf_url), markingSchemeUrl: blank(p.marking_scheme_url),
+        },
+      });
+    }
+
+    // Revision modules
+    for (const m of src.revisionModules) {
+      if (await existing(R, m.id)) {
+        stats.skipped.revisionModules++;
+        continue;
+      }
+      stats.created.revisionModules++;
+      if (DRY_RUN) continue;
+      await R.create({
+        status: 'published',
+        data: {
+          legacyId: Number(m.id), subject: subjectDoc.get(m.subject_id),
+          unit: m.unit_id ? unitDoc.get(m.unit_id) : null, title: m.title,
+          topicsCount: Number(m.topics_count ?? 0), isPopular: m.is_popular === true,
+          shortNotesUrl: blank(m.short_notes_pdf_url), essayGuideUrl: blank(m.essay_guide_pdf_url),
+        },
+      });
+    }
+
     console.log(`${DRY_RUN ? 'DRY RUN, would create' : 'created'}:`, stats.created);
     console.log('already imported (skipped):', stats.skipped);
+    console.log('question warnings (new quizzes only):', warnings);
   } finally {
     await strapi.destroy();
   }

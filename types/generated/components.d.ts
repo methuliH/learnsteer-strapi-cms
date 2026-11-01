@@ -69,10 +69,18 @@ export interface QuizOption extends Struct.ComponentSchema {
   };
   attributes: {
     image: Schema.Attribute.Media<'images'>;
+    imageUrl: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 500;
+      }>;
     isCorrect: Schema.Attribute.Boolean &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<false>;
-    text: Schema.Attribute.Text & Schema.Attribute.Required;
+    label: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 5;
+      }>;
+    text: Schema.Attribute.Text;
   };
 }
 
@@ -86,6 +94,10 @@ export interface QuizQuestion extends Struct.ComponentSchema {
   attributes: {
     explanation: Schema.Attribute.RichText;
     image: Schema.Attribute.Media<'images'>;
+    imageUrl: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 500;
+      }>;
     options: Schema.Attribute.Component<'quiz.option', true>;
     order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     points: Schema.Attribute.Integer &
