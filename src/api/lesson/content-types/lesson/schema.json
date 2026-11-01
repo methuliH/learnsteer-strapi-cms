@@ -42,9 +42,9 @@
       "min": 0
     },
     "lessonType": {
-      "type": "enumeration",
-      "enum": ["Video", "Reading", "Live", "Practical"],
-      "default": "Video"
+      "type": "string",
+      "default": "Video",
+      "maxLength": 100
     },
     "isLocked": {
       "type": "boolean",
@@ -62,7 +62,11 @@
     },
     "targetDifficulty": {
       "type": "enumeration",
-      "enum": ["Beginner", "Intermediate", "Advanced"],
+      "enum": [
+        "Beginner",
+        "Intermediate",
+        "Advanced"
+      ],
       "default": "Intermediate"
     },
     "tags": {
@@ -70,7 +74,12 @@
     },
     "reviewStatus": {
       "type": "enumeration",
-      "enum": ["draft", "in_review", "changes_requested", "approved"],
+      "enum": [
+        "draft",
+        "in_review",
+        "changes_requested",
+        "approved"
+      ],
       "default": "draft",
       "required": true
     },
@@ -86,6 +95,10 @@
       "type": "component",
       "repeatable": true,
       "component": "lesson.resource"
+    },
+    "legacyId": {
+      "type": "integer",
+      "min": 1
     }
   }
 }

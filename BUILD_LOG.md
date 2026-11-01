@@ -72,3 +72,28 @@ Calls without an admin user (scripts, imports) are not restricted.
 - `/_health` 204, no server errors, admin panel loads.
 - `npm run verify:rules` against Neon: **11/11 passed**.
 - Seniru's `ss-learnsteer` `neondb` (production): 18 tables before and after; nothing created or changed there.
+
+## 8. Imported existing content (subjects, units, lessons)
+
+**Before:** Strapi on Neon was empty.
+
+**Schema changes needed to fit the real data** (found by profiling the source first)
+- `lesson.lessonType`: enumeration (Video/Reading/Live/Practical) -> free text. The real data uses 16 kinds such as "Worked Examples", "Video & Summary", "3D Visualization".
+- `lesson.note-section.sectionType`: added `tip` and `phase` (the data uses text/tip/phase).
+- `lesson.note-section.imageUrl` (new): all 70 note images are links on `cdn.learnsteer.lk`, not uploads.
+- `lesson.resource`: `file` is now optional; new `externalUrl`, `fileType`, `fileSize`. All 60 resources are `cdn.learnsteer.lk` links (58 PDF, **2 DOCX**). The PDF-only check still applies to anything uploaded.
+- `legacyId` (new) on Subject, Unit, Lesson: the old table id, used to make the import re-runnable and to map back to the old database later.
+
+**Now**
+- `scripts/import-legacy.js` (`npm run import:legacy`, needs `SOURCE_DATABASE_URL`, supports `--dry-run`). Reads the source inside a `READ ONLY` transaction; skips rows whose `legacyId` already exists.
+- Source: the Neon `cms-dev` branch of `ss-learnsteer` (a copy of production; read-only access only).
+- Imported into Strapi on Neon: **15 subjects, 30 units, 62 lessons** (all published, `reviewStatus = approved`, since all were visible), **70 note sections, 60 resources**.
+
+**Checks**
+- Dry run reported 15/30/62 to create before anything was written.
+- Second real run: created 0, skipped 15/30/62 (re-runnable).
+- All 30 units linked to a subject; all 62 published lessons linked to a unit.
+- All 62 lessons compared with the source on id, title, type, video URL, duration, lesson number, instructor: **62 match, 0 differ**.
+- `tsc` clean; `npm run verify:rules` still **11/11** after the schema changes.
+
+**Not imported yet:** quizzes (12, with 459 questions and 1,800 options), past papers (56), revision modules (42). Note images and resource files are still links to `cdn.learnsteer.lk`, not files in Strapi's media library.

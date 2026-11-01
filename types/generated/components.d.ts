@@ -10,8 +10,14 @@ export interface LessonNoteSection extends Struct.ComponentSchema {
   attributes: {
     content: Schema.Attribute.RichText & Schema.Attribute.Required;
     image: Schema.Attribute.Media<'images'>;
+    imageUrl: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 500;
+      }>;
     order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
-    sectionType: Schema.Attribute.Enumeration<['text', 'html', 'image']> &
+    sectionType: Schema.Attribute.Enumeration<
+      ['text', 'tip', 'phase', 'html', 'image']
+    > &
       Schema.Attribute.DefaultTo<'text'>;
     title: Schema.Attribute.String &
       Schema.Attribute.SetMinMaxLength<{
@@ -32,7 +38,20 @@ export interface LessonResource extends Struct.ComponentSchema {
       Schema.Attribute.SetMinMaxLength<{
         maxLength: 100;
       }>;
-    file: Schema.Attribute.Media<'files'> & Schema.Attribute.Required;
+    externalUrl: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 500;
+      }>;
+    file: Schema.Attribute.Media<'files'>;
+    fileSize: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 50;
+      }>;
+    fileType: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 50;
+      }> &
+      Schema.Attribute.DefaultTo<'PDF'>;
     title: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMaxLength<{

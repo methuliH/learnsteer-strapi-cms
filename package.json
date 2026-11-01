@@ -13,7 +13,8 @@
     "strapi": "strapi",
     "upgrade": "npx @strapi/upgrade latest",
     "upgrade:dry": "npx @strapi/upgrade latest --dry",
-    "verify:rules": "node scripts/verify-rules.js"
+    "verify:rules": "node scripts/verify-rules.js",
+    "import:legacy": "node scripts/import-legacy.js"
   },
   "dependencies": {
     "@strapi/database": "5.60.0",

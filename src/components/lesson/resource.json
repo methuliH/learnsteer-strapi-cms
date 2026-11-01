@@ -15,12 +15,27 @@
     "file": {
       "type": "media",
       "multiple": false,
-      "required": true,
-      "allowedTypes": ["files"]
+      "required": false,
+      "allowedTypes": [
+        "files"
+      ]
     },
     "color": {
       "type": "string",
       "maxLength": 100
+    },
+    "externalUrl": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "fileType": {
+      "type": "string",
+      "default": "PDF",
+      "maxLength": 50
+    },
+    "fileSize": {
+      "type": "string",
+      "maxLength": 50
     }
   }
 }

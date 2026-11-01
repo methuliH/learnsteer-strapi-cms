@@ -30,7 +30,11 @@
     },
     "medium": {
       "type": "enumeration",
-      "enum": ["Sinhala", "English", "Tamil"],
+      "enum": [
+        "Sinhala",
+        "English",
+        "Tamil"
+      ],
       "default": "Sinhala",
       "required": true
     },
@@ -63,6 +67,10 @@
       "relation": "oneToMany",
       "target": "api::revision-module.revision-module",
       "mappedBy": "subject"
+    },
+    "legacyId": {
+      "type": "integer",
+      "min": 1
     }
   }
 }

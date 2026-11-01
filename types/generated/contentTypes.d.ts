@@ -472,6 +472,13 @@ export interface ApiLessonLesson extends Struct.CollectionTypeSchema {
         maxLength: 150;
       }>;
     isLocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    legacyId: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      >;
     lessonNumber: Schema.Attribute.Integer &
       Schema.Attribute.Required &
       Schema.Attribute.SetMinMax<
@@ -480,9 +487,10 @@ export interface ApiLessonLesson extends Struct.CollectionTypeSchema {
         },
         number
       >;
-    lessonType: Schema.Attribute.Enumeration<
-      ['Video', 'Reading', 'Live', 'Practical']
-    > &
+    lessonType: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 100;
+      }> &
       Schema.Attribute.DefaultTo<'Video'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -712,6 +720,13 @@ export interface ApiSubjectSubject extends Struct.CollectionTypeSchema {
       Schema.Attribute.SetMinMaxLength<{
         maxLength: 255;
       }>;
+    legacyId: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -769,6 +784,13 @@ export interface ApiUnitUnit extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     description: Schema.Attribute.Text;
+    legacyId: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      >;
     lessons: Schema.Attribute.Relation<'oneToMany', 'api::lesson.lesson'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::unit.unit'> &

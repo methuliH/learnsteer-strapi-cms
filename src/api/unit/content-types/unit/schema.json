@@ -45,6 +45,10 @@
       "relation": "oneToMany",
       "target": "api::lesson.lesson",
       "mappedBy": "unit"
+    },
+    "legacyId": {
+      "type": "integer",
+      "min": 1
     }
   }
 }

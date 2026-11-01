@@ -13,7 +13,13 @@
     },
     "sectionType": {
       "type": "enumeration",
-      "enum": ["text", "html", "image"],
+      "enum": [
+        "text",
+        "tip",
+        "phase",
+        "html",
+        "image"
+      ],
       "default": "text"
     },
     "content": {
@@ -23,11 +29,17 @@
     "image": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "order": {
       "type": "integer",
       "default": 0
+    },
+    "imageUrl": {
+      "type": "string",
+      "maxLength": 500
     }
   }
 }
